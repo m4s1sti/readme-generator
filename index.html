@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub README Profile Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            bg: '#0B0F17',
+                            card: '#111827',
+                            border: '#1F2937',
+                            input: '#1A2234',
+                            hover: '#252F42',
+                            accent: '#6366F1'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1F2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+        .glow-accent {
+            box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.25);
+        }
+        .glow-subtle {
+            box-shadow: 0 0 15px -3px rgba(31, 41, 55, 0.5);
+        }
+        .markdown-preview h1 { font-size: 1.8rem; font-weight: 700; border-bottom: 1px solid #1F2937; padding-bottom: 0.5rem; margin-bottom: 1rem; color: #F9FAFB; }
+        .markdown-preview h2 { font-size: 1.4rem; font-weight: 600; border-bottom: 1px solid #1F2937; padding-bottom: 0.3rem; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #F3F4F6; }
+        .markdown-preview h3 { font-size: 1.15rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #E5E7EB; }
+        .markdown-preview p { margin-bottom: 1rem; color: #D1D5DB; line-height: 1.6; }
+        .markdown-preview ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: #D1D5DB; }
+        .markdown-preview li { margin-bottom: 0.25rem; }
+        .markdown-preview img { display: inline-block; margin: 4px; border-radius: 4px; }
+        .markdown-preview a { color: #818CF8; text-decoration: none; }
+        .markdown-preview a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="bg-dark-bg text-gray-200 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-dark-border bg-dark-bg/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20">
+                    <i class="fa-brands fa-github text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-white leading-tight">README Generator</h1>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <button id="copyBtn" onclick="copyMarkdown()" class="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg text-sm transition shadow-lg shadow-indigo-600/20 active:scale-95">
+                    <i class="fa-regular fa-copy"></i>
+                    <span class="hidden sm:inline">Copy Code</span>
+                </button>
+                <button id="downloadBtn" onclick="downloadMarkdown()" class="flex items-center space-x-2 bg-dark-card hover:bg-dark-hover border border-dark-border text-gray-200 font-medium px-4 py-2 rounded-lg text-sm transition active:scale-95">
+                    <i class="fa-solid fa-download"></i>
+                    <span class="hidden sm:inline">Download .md</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT COLUMN: Form Inputs (6 Cols) -->
+        <section class="lg:col-span-6 space-y-6">
+
+            <div id="formSection" class="space-y-6">
+
+                <!-- 1. Header & Basic Profile Info -->
+                <div class="bg-dark-card border border-dark-border rounded-xl p-5 space-y-4 glow-subtle">
+                    <div class="flex items-center space-x-2 text-indigo-400 font-semibold text-sm uppercase tracking-wider">
+                        <i class="fa-solid fa-user-circle"></i>
+                        <span>1. BASIC PROFILE INFO</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Full Name / Display Name</label>
+                            <input type="text" id="name" placeholder="John Doe" value="John Doe" oninput="updatePreview()" class="w-full bg-dark-input border border-dark-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Title / Role</label>
+                            <input type="text" id="title" placeholder="Full Stack Developer & Open Source" value="Software Developer & Open Source Enthusiast" oninput="updatePreview()" class="w-full bg-dark-input border border-dark-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Banner Text (Optional)</label>
+                            <input type="text" id="bannerText" placeholder="Hello, Welcome to My Profile!" value="Hello, Welcome to My Profile!" oninput="updatePreview()" class="w-full bg-dark-input border border-dark-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Banner Color</label>
+                            <select id="bannerTheme" onchange="updatePreview()" class="w-full bg-dark-input border border-dark-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
+                                <option value="blue" selected>🔵 Blue</option>
+                                <option value="red">🔴 Red</option>
+                                <option value="dark">⬛ Dark / Black</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">Short Bio / Intro Paragraph</label>
+                        <textarea id="bio" rows="3" placeholder="Write a short introduction about yourself..." oninput="updatePreview()" class="w-full bg-dark-input border border-dark-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">Passionate software developer focused on building modern web apps, high-performance backends, and interactive open source tools.</textarea>
+                    </div>
+
+                    <!-- Current Activities Toggle Header -->
+                    <div class="space-y-3 pt-2">
+                        <label class="flex items-center space-x-2 text-xs font-medium text-gray-400 cursor-pointer select-none">
+                            <input type="checkbox" id="toggleActivities" checked onchange="toggleActivitiesSection()" class="accent-indigo-600 rounded">
+                            <span class="text-white font-semibold">Current Activities & Goals</span>
+                        </label>
+                        
+                        <div id="activitiesInputs" class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm">🔭</span>
+                                <input type="text" id="work" placeholder="I'm currently working on..." value="A high-performance web dashboard project" oninput="updatePreview()" class="flex-1 bg-dark-input border border-dark-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm">🌱</span>
+                                <input type="text" id="learning" placeholder="I'm currently learning..." value="Rust & WebAssembly" oninput="updatePreview()" class="flex-1 bg-dark-input border border-dark-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm">👯</span>
+                                <input type="text" id="collaborate" placeholder="I'm looking to collaborate on..." value="Open source React/Node projects" oninput="updatePreview()" class="flex-1 bg-dark-input border border-dark-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm">💬</span>
+                                <input type="text" id="askMe" placeholder="Ask me about..." value="React, C#, System Architecture, Game Dev" oninput="updatePreview()" class="flex-1 bg-dark-input border border-dark-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm">⚡</span>
+                                <input type="text" id="funFact" placeholder="Fun fact..." value="I love mechanical keyboards and coffee!" oninput="updatePreview()" class="flex-1 bg-dark-input border border-dark-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. GitHub Username & Stats -->
+                <div class="bg-dark-card border border-dark-border rounded-xl p-5 space-y-4 glow-subtle">
+                    <div class="flex items-center space-x-2 text-indigo-400 font-semibold text-sm uppercase tracking-wider">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>2. GITHUB USERNAME & STATS CARDS</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">GitHub Username</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-xs">github.com/</span>
+                            <input type="text" id="githubUsername" placeholder="octocat" value="sample_user" oninput="updatePreview()" class="w-full bg-dark-input border border-dark-border rounded-lg pl-28 pr-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition font-mono">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-1">
+                        <label class="block text-xs font-medium text-gray-400">Cards to Display</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center space-x-2 bg-dark-input border border-dark-border p-2 rounded-lg cursor-pointer hover:bg-dark-hover transition">
+                                <input type="checkbox" id="showStreakCard" checked onchange="updatePreview()" class="accent-indigo-600 rounded">
+                                <span>GitHub Streak Stats</span>
+                            </label>
+                            <label class="flex items-center space-x-2 bg-dark-input border border-dark-border p-2 rounded-lg cursor-pointer hover:bg-dark-hover transition">
+                                <input type="checkbox" id="showTrophy" checked onchange="updatePreview()" class="accent-indigo-600 rounded">
+                                <span>GitHub Trophies Header</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Tech Stack / Skills Badges -->
+                <div class="bg-dark-card border border-dark-border rounded-xl p-5 space-y-4 glow-subtle">
+                    <div class="flex items-center space-x-2 text-indigo-400 font-semibold text-sm uppercase tracking-wider">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>3. TECH STACK & SKILLS</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <span class="text-xs font-semibold text-gray-300 block">Languages</span>
+                        <div id="languagesContainer" class="flex flex-wrap gap-2"></div>
+
+                        <span class="text-xs font-semibold text-gray-300 block pt-2">Frameworks & Libraries</span>
+                        <div id="frameworksContainer" class="flex flex-wrap gap-2"></div>
+
+                        <span class="text-xs font-semibold text-gray-300 block pt-2">Tools & Databases</span>
+                        <div id="toolsContainer" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- 4. Social Links -->
+                <div class="bg-dark-card border border-dark-border rounded-xl p-5 space-y-4 glow-subtle">
+                    <div class="flex items-center space-x-2 text-indigo-400 font-semibold text-sm uppercase tracking-wider">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        <span>4. SOCIAL LINKS & CONTACTS</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="block text-gray-400 mb-1"><i class="fa-brands fa-linkedin text-blue-400 mr-1"></i> LinkedIn Username</label>
+                            <input type="text" id="socialLinkedin" placeholder="username" value="sample_user" oninput="updatePreview()" class="w-full bg-dark-input border border-dark-border rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-1"><i class="fa-brands fa-discord text-indigo-400 mr-1"></i> Discord Username</label>
+                            <input type="text" id="socialDiscord" placeholder="username" value="sample_user" oninput="updatePreview()" class="w-full bg-dark-input border border-dark-border rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-1"><i class="fa-solid fa-envelope text-red-400 mr-1"></i> Email Address</label>
+                            <input type="email" id="socialEmail" placeholder="example@gmail.com" value="sample@email.com" oninput="updatePreview()" class="w-full bg-dark-input border border-dark-border rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-1"><i class="fa-solid fa-globe text-emerald-400 mr-1"></i> Portfolio Website</label>
+                            <input type="text" id="socialWebsite" placeholder="https://..." value="https://sample-site.dev" oninput="updatePreview()" class="w-full bg-dark-input border border-dark-border rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: Output & Preview (6 Cols) -->
+        <section id="previewSection" class="lg:col-span-6 space-y-4">
+
+            <!-- Card Header with View Switcher -->
+            <div class="bg-dark-card border border-dark-border rounded-xl p-4 flex items-center justify-between glow-subtle">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-brands fa-markdown text-indigo-400 text-lg"></i>
+                    <span class="text-xs font-mono text-gray-300 font-medium">README.md</span>
+                </div>
+
+                <div class="flex rounded-lg bg-dark-input p-1 border border-dark-border">
+                    <button onclick="switchView('visual')" id="btnVisualTab" class="px-3 py-1 text-xs font-medium rounded-md bg-indigo-600 text-white transition">Visual Preview</button>
+                    <button onclick="switchView('markdown')" id="btnMarkdownTab" class="px-3 py-1 text-xs font-medium rounded-md text-gray-400 hover:text-white transition">Raw Markdown</button>
+                </div>
+            </div>
+
+            <!-- Preview Box Containers -->
+            <div class="bg-dark-card border border-dark-border rounded-xl p-6 min-h-[600px] glow-accent overflow-x-auto">
+                <div id="visualPreview" class="markdown-preview space-y-4"></div>
+                <div id="markdownPreview" class="hidden">
+                    <textarea id="rawMarkdownOutput" readonly class="w-full h-[600px] bg-dark-bg border border-dark-border rounded-lg p-4 font-mono text-xs text-indigo-300 focus:outline-none resize-none leading-relaxed selection:bg-indigo-600 selection:text-white"></textarea>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-dark-border bg-dark-bg py-6 mt-12 text-center text-xs text-gray-500">
+        <p>Built for Developers & Open Source Creators.</p>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-indigo-600 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50">
+        <i class="fa-solid fa-circle-check text-lg"></i>
+        <span id="toastMsg" class="text-sm font-medium">Copied!</span>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        const techCatalog = {
+            languages: [
+                { name: 'JavaScript', badge: 'https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black' },
+                { name: 'TypeScript', badge: 'https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white' },
+                { name: 'Python', badge: 'https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white' },
+                { name: 'C#', badge: 'https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white' },
+                { name: 'C++', badge: 'https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white' },
+                { name: 'HTML5', badge: 'https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white' },
+                { name: 'CSS3', badge: 'https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white' }
+            ],
+            frameworks: [
+                { name: 'React', badge: 'https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black' },
+                { name: 'Node.js', badge: 'https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white' },
+                { name: '.NET', badge: 'https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white' },
+                { name: 'Tailwind CSS', badge: 'https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white' },
+                { name: 'Unity', badge: 'https://img.shields.io/badge/Unity-100000?style=for-the-badge&logo=unity&logoColor=white' }
+            ],
+            tools: [
+                { name: 'Git', badge: 'https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white' },
+                { name: 'MySQL', badge: 'https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white' },
+                { name: 'Docker', badge: 'https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white' },
+                { name: 'VS Code', badge: 'https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white' }
+            ]
+        };
+
+        let selectedBadges = [
+            'https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black',
+            'https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white',
+            'https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white',
+            'https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white'
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBadgePickers();
+            updatePreview();
+        });
+
+        function toggleActivitiesSection() {
+            const isChecked = document.getElementById('toggleActivities').checked;
+            const container = document.getElementById('activitiesInputs');
+            if (isChecked) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+            updatePreview();
+        }
+
+        function renderBadgePickers() {
+            renderSection('languagesContainer', techCatalog.languages);
+            renderSection('frameworksContainer', techCatalog.frameworks);
+            renderSection('toolsContainer', techCatalog.tools);
+        }
+
+        function renderSection(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = items.map(item => {
+                const isSelected = selectedBadges.includes(item.badge);
+                return `
+                    <button onclick="toggleBadge('${item.badge}')" class="text-xs px-2.5 py-1 rounded-md border transition flex items-center space-x-1.5 ${isSelected ? 'bg-indigo-600/20 border-indigo-500 text-indigo-300' : 'bg-dark-input border-dark-border text-gray-400 hover:text-white'}">
+                        <span>${item.name}</span>
+                        ${isSelected ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function toggleBadge(badgeUrl) {
+            if (selectedBadges.includes(badgeUrl)) {
+                selectedBadges = selectedBadges.filter(b => b !== badgeUrl);
+            } else {
+                selectedBadges.push(badgeUrl);
+            }
+            renderBadgePickers();
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const name = document.getElementById('name').value || 'John Doe';
+            const title = document.getElementById('title').value || 'Software Developer';
+            
+            const bannerText = document.getElementById('bannerText').value.trim();
+            const bannerColor = document.getElementById('bannerTheme').value;
+            
+            let hexColor1 = '0072ff', hexColor2 = '00c6ff';
+            if (bannerColor === 'red') {
+                hexColor1 = 'cb2d3e'; hexColor2 = 'ef473a';
+            } else if (bannerColor === 'dark') {
+                hexColor1 = '1f2937'; hexColor2 = '111827';
+            }
+
+            let bannerUrl = `https://capsule-render.vercel.app/api?type=waving&color=0:${hexColor1},100:${hexColor2}&height=180&section=header&animation=fadeIn`;
+            if (bannerText) {
+                bannerUrl += `&text=${encodeURIComponent(bannerText)}&fontSize=30&fontColor=ffffff`;
+            }
+
+            const bio = document.getElementById('bio').value;
+
+            const showActivities = document.getElementById('toggleActivities').checked;
+            const work = document.getElementById('work').value;
+            const learning = document.getElementById('learning').value;
+            const collaborate = document.getElementById('collaborate').value;
+            const askMe = document.getElementById('askMe').value;
+            const funFact = document.getElementById('funFact').value;
+
+            const username = document.getElementById('githubUsername').value.trim() || 'sample_user';
+            const showStreakCard = document.getElementById('showStreakCard').checked;
+            const showTrophy = document.getElementById('showTrophy').checked;
+
+            const linkedin = document.getElementById('socialLinkedin').value;
+            const discord = document.getElementById('socialDiscord').value;
+            const email = document.getElementById('socialEmail').value;
+            const website = document.getElementById('socialWebsite').value;
+
+            let visualHtml = '';
+            let markdownText = '';
+
+            // Banner
+            visualHtml += `<div class="mb-4"><img src="${bannerUrl}" class="w-full rounded-lg" alt="Banner" /></div>`;
+            markdownText += `![Banner](${bannerUrl})\n\n`;
+
+            // Title Header
+            visualHtml += `
+                <h1 class="text-2xl font-bold text-white mb-1">Hi there, I'm ${name} 👋</h1>
+                <p class="text-indigo-400 font-medium mb-4 flex items-center gap-2"><i class="fa-solid fa-code"></i> ${title}</p>
+            `;
+            markdownText += `# Hi there, I'm ${name} 👋\n### ${title}\n\n`;
+
+            // Bio
+            if (bio) {
+                visualHtml += `<p class="text-gray-300 text-sm mb-4 leading-relaxed">${bio}</p>`;
+                markdownText += `${bio}\n\n`;
+            }
+
+            // Trophies
+            if (showTrophy) {
+                const trophyUrl = `https://github-profile-trophies.vercel.app/?username=${username}&theme=onedark&column=6&margin-w=10&margin-h=10`;
+                visualHtml += `<div class="my-4"><img src="${trophyUrl}" alt="Trophies" class="max-w-full rounded"></div>`;
+                markdownText += `![Trophies](${trophyUrl})\n\n`;
+            }
+
+            // About Me Activities
+            if (showActivities) {
+                visualHtml += `<h2 class="text-lg font-semibold text-white border-b border-dark-border pb-2 mb-3 flex items-center gap-2"><i class="fa-solid fa-user"></i> About Me</h2><ul class="space-y-1.5 text-sm text-gray-300 mb-6">`;
+                markdownText += `## 🚀 About Me\n`;
+
+                if (work) {
+                    visualHtml += `<li>🔭 <strong>Currently working on:</strong> ${work}</li>`;
+                    markdownText += `- 🔭 **Currently working on:** ${work}\n`;
+                }
+                if (learning) {
+                    visualHtml += `<li>🌱 <strong>Currently learning:</strong> ${learning}</li>`;
+                    markdownText += `- 🌱 **Currently learning:** ${learning}\n`;
+                }
+                if (collaborate) {
+                    visualHtml += `<li>👯 <strong>Looking to collaborate on:</strong> ${collaborate}</li>`;
+                    markdownText += `- 👯 **Looking to collaborate on:** ${collaborate}\n`;
+                }
+                if (askMe) {
+                    visualHtml += `<li>💬 <strong>Ask me about:</strong> ${askMe}</li>`;
+                    markdownText += `- 💬 **Ask me about:** ${askMe}\n`;
+                }
+                if (funFact) {
+                    visualHtml += `<li>⚡ <strong>Fun fact:</strong> ${funFact}</li>`;
+                    markdownText += `- ⚡ **Fun fact:** ${funFact}\n`;
+                }
+                visualHtml += `</ul>`;
+                markdownText += `\n`;
+            }
+
+            // Tech Stack
+            if (selectedBadges.length > 0) {
+                visualHtml += `<h2 class="text-lg font-semibold text-white border-b border-dark-border pb-2 mb-3 flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> Tech Stack</h2><div class="flex flex-wrap gap-1.5 mb-6">`;
+                markdownText += `## 🛠️ Tech Stack\n<p align="left">\n`;
+
+                selectedBadges.forEach(b => {
+                    visualHtml += `<img src="${b}" alt="tech" class="h-7" />`;
+                    markdownText += `  <img src="${b}" alt="tech" />\n`;
+                });
+
+                visualHtml += `</div>`;
+                markdownText += `</p>\n\n`;
+            }
+
+            // Streak Card
+            if (showStreakCard) {
+                const streakUrl = `https://github-readme-streak-stats.herokuapp.com/?user=${username}&theme=dark`;
+                visualHtml += `<h2 class="text-lg font-semibold text-white border-b border-dark-border pb-2 mb-3 flex items-center gap-2"><i class="fa-solid fa-chart-simple"></i> GitHub Stats</h2><div class="my-4"><img src="${streakUrl}" alt="Streak Stats" class="max-w-full" /></div>`;
+                markdownText += `## 📊 GitHub Stats\n![Streak Stats](${streakUrl})\n\n`;
+            }
+
+            // Socials (Interactive Badges)
+            visualHtml += `<h2 class="text-lg font-semibold text-white border-b border-dark-border pb-2 mb-3 flex items-center gap-2"><i class="fa-solid fa-globe"></i> Connect with Me</h2><div class="flex flex-wrap gap-2 items-center">`;
+            markdownText += `## 🌐 Connect with Me\n<p align="left">\n`;
+
+            if (linkedin) {
+                const url = `https://linkedin.com/in/${linkedin}`;
+                const badge = `https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white`;
+                visualHtml += `<a href="${url}" target="_blank" class="hover:opacity-80 transition transform hover:-translate-y-0.5 inline-block"><img src="${badge}" alt="LinkedIn" class="h-8" /></a>`;
+                markdownText += `  <a href="${url}" target="_blank"><img src="${badge}" alt="LinkedIn" /></a>\n`;
+            }
+            if (discord) {
+                const url = `https://discord.com/users/${discord}`;
+                const badge = `https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white`;
+                visualHtml += `<a href="${url}" target="_blank" class="hover:opacity-80 transition transform hover:-translate-y-0.5 inline-block"><img src="${badge}" alt="Discord" class="h-8" /></a>`;
+                markdownText += `  <a href="${url}" target="_blank"><img src="${badge}" alt="Discord" /></a>\n`;
+            }
+            if (email) {
+                const url = `mailto:${email}`;
+                const badge = `https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white`;
+                visualHtml += `<a href="${url}" class="hover:opacity-80 transition transform hover:-translate-y-0.5 inline-block"><img src="${badge}" alt="Email" class="h-8" /></a>`;
+                markdownText += `  <a href="${url}"><img src="${badge}" alt="Email" /></a>\n`;
+            }
+            if (website) {
+                const url = website.startsWith('http') ? website : `https://${website}`;
+                const badge = `https://img.shields.io/badge/Portfolio-10B981?style=for-the-badge&logo=google-chrome&logoColor=white`;
+                visualHtml += `<a href="${url}" target="_blank" class="hover:opacity-80 transition transform hover:-translate-y-0.5 inline-block"><img src="${badge}" alt="Website" class="h-8" /></a>`;
+                markdownText += `  <a href="${url}" target="_blank"><img src="${badge}" alt="Website" /></a>\n`;
+            }
+
+            visualHtml += `</div>`;
+            markdownText += `</p>\n`;
+
+            document.getElementById('visualPreview').innerHTML = visualHtml;
+            document.getElementById('rawMarkdownOutput').value = markdownText;
+        }
+
+        function switchView(view) {
+            const visualTab = document.getElementById('visualPreview');
+            const markdownTab = document.getElementById('markdownPreview');
+            const btnVisual = document.getElementById('btnVisualTab');
+            const btnMarkdown = document.getElementById('btnMarkdownTab');
+
+            if (view === 'visual') {
+                visualTab.classList.remove('hidden');
+                markdownTab.classList.add('hidden');
+                btnVisual.className = "px-3 py-1 text-xs font-medium rounded-md bg-indigo-600 text-white transition";
+                btnMarkdown.className = "px-3 py-1 text-xs font-medium rounded-md text-gray-400 hover:text-white transition";
+            } else {
+                visualTab.classList.add('hidden');
+                markdownTab.classList.remove('hidden');
+                btnMarkdown.className = "px-3 py-1 text-xs font-medium rounded-md bg-indigo-600 text-white transition";
+                btnVisual.className = "px-3 py-1 text-xs font-medium rounded-md text-gray-400 hover:text-white transition";
+            }
+        }
+
+        function copyMarkdown() {
+            const text = document.getElementById('rawMarkdownOutput').value;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard!');
+            });
+        }
+
+        function downloadMarkdown() {
+            const text = document.getElementById('rawMarkdownOutput').value;
+            const blob = new Blob([text], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'README.md';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
